@@ -1,118 +1,91 @@
-{
-    "layer": "top",
-    "height": 28,
-    "modules-left": [
-        "cpu",
-        "memory",
-        "cava",
-        "custom/scroll"
-    ],
-    "modules-center": [
-        "hyprland/workspaces"
-    ],
-    "modules-right": [
-        "network",
-        "battery",
-        "clock"
-    ],
+[
+  {
+    "name": "main",
+    "layer": "bottom",
+    "position": "top",
+    "exclusive": false,
+    "height": 26,
+    "modules-left": ["cpu", "memory", "cava", "custom/scroll"],
+    "modules-right": ["bluetooth", "network", "battery", "clock"],
+
     "cpu": {
-        "format": "{icon} {usage}%",
-        "format-icons": [
-            "<low>",
-            "<mid>",
-            "<high>"
-        ],
-        "interval": 2
+      "format": "{icon}  {usage}%",
+      "format-icons": [""],
+      "interval": 2
     },
     "memory": {
-        "format": "<icon> {percentage}%",
-        "interval": 5,
-        "tooltip-format": "{used} / {total} GiB"
+      "format": "{icon} {percentage}%",
+      "format-icons": [""],
+      "interval": 5,
+      "tooltip-format": "{used} / {total} GiB"
     },
     "cava": {
-        "framerate": 30,
-        "bars": 10,
-        "format-icons": [
-            "▁",
-            "▂",
-            "▃",
-            "▄",
-            "▅",
-            "▆",
-            "▇",
-            "█"
-        ],
-        "bar_delimiter": 0,
-        "hide_on_silence": true
+      "framerate": 30,
+      "bars": 10,
+      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+      "bar_delimiter": 0,
+      "hide_on_silence": true
     },
     "custom/scroll": {
-        "exec": ".config/waybar/scripts/scroll.py",
-        "format": "{}",
-        "escape": true
-    },
-    "hyprland/workspaces": {
-        "format": "{id}",
-        "on-click": "activate",
-        "all-outputs": true,
-        "persistent-workspaces": {
-            "*": 5
-        }
+      "exec": "$HOME/.config/waybar/scripts/scroll.py",
+      "format": "{}",
+      "escape": true
     },
     "bluetooth": {},
     "network": {
-        "format-wifi": "{icon}",
-        "format-icons": [
-            "󰤟",
-            "󰤢",
-            "󰤥",
-            "󰤨"
-        ],
-        "format-ethernet": "󰈀",
-        "format-disconnected": "󰤮",
-        "tooltip-format-wifi": "{essid}",
-        "tooltip-format-ethernet": "Ethernet: {ifname}",
-        "tooltip-format-disconnected": "Not connected"
+      "format-wifi": "{icon}",
+      "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
+      "format-ethernet": "󰈀",
+      "format-disconnected": "󰤮",
+      "tooltip-format-wifi": "{essid}",
+      "tooltip-format-ethernet": "Ethernet: {ifname}",
+      "tooltip-format-disconnected": "Not connected"
     },
     "battery": {
-        "format": "{icon} {percentage}%",
-        "format-icons": [
-            "󰂎",
-            "󰁺",
-            "󰁻",
-            "󰁼",
-            "󰁽",
-            "󰁾",
-            "󰁿",
-            "󰂀",
-            "󰂁",
-            "󰂂",
-            "󰁹"
-        ],
-        "format-charging": "󰂄",
-        "tooltip-format": "{timeTo}",
-        "interval": 30
+      "format": "{icon} {percentage}%",
+      "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+      "format-charging": "󰂄",
+      "tooltip-format": "{timeTo}",
+      "interval": 30
     },
     "clock": {
-        "format": "{:%H:%M:%S}",
-        "format-alt": "{:%d/%m/%Y}",
-        "interval": 1,
-        "tooltip-format": "<tt>{calendar}</tt>",
-        "calendar": {
-            "mode": "month",
-            "weeks-pos": "right",
-            "on-scroll": 1,
-            "format": {
-                "months": "<span color='#89b4fa'><b>{}</b></span>",
-                "days": "<span color='#cdd6f4'>{}</span>",
-                "weeks": "<span color='#6c7086'>W{}</span>",
-                "weekdays": "<span color='#f9e2af'>{}</span>",
-                "today": "<span color='#f38ba8'><b><u>{}</u></b></span>"
-            }
-        },
-        "actions": {
-            "on-click-right": "mode",
-            "on-scroll-up": "shift_up",
-            "on-scroll-down": "shift_down"
+      "format": "{:%H:%M:%S}",
+      "format-alt": "{:%d/%m/%Y}",
+      "interval": 1,
+      "tooltip-format": "<tt>{calendar}</tt>",
+      "calendar": {
+        "mode": "month",
+        "weeks-pos": "right",
+        "on-scroll": 1,
+        "format": {
+          "months": "<span color='#89b4fa'><b>{}</b></span>",
+          "days": "<span color='#cdd6f4'>{}</span>",
+          "weeks": "<span color='#6c7086'>W{}</span>",
+          "weekdays": "<span color='#f9e2af'>{}</span>",
+          "today": "<span color='#f38ba8'><b><u>{}</u></b></span>"
         }
+      },
+      "actions": {
+        "on-click-right": "mode",
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down"
+      }
     }
-}
+  },
+  {
+    "name": "tab",
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "width": 200,
+    "modules-center": ["hyprland/workspaces"],
+    "hyprland/workspaces": {
+      "format": "{id}",
+      "on-click": "activate",
+      "all-outputs": true,
+      "persistent-workspaces": {
+        "*": 5
+      }
+    }
+  }
+]
