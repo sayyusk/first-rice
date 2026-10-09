@@ -1,10 +1,11 @@
 [
   {
     "name": "main",
-    "layer": "bottom",
-    "position": "top",
-    "exclusive": false,
-    "height": 26,
+    "layer": "top",
+"layer": "top",
+"position": "top",
+"exclusive": true,
+"height": 26
     "modules-left": ["cpu", "memory", "cava", "custom/scroll"],
     "modules-right": ["bluetooth", "network", "battery", "clock"],
 
@@ -72,20 +73,23 @@
       }
     }
   },
-  {
-    "name": "tab",
-    "layer": "top",
-    "position": "top",
-    "height": 30,
-    "width": 200,
-    "modules-center": ["hyprland/workspaces"],
-    "hyprland/workspaces": {
-      "format": "{id}",
-      "on-click": "activate",
-      "all-outputs": true,
-      "persistent-workspaces": {
-        "*": 5
-      }
+ {
+  "name": "tab",
+  "layer": "top",
+  "position": "top",
+  "exclusive": false,
+  "passthrough": false,
+  "height": 30,
+  "width": 240,
+  "margin-top": 0,
+  "modules-center": ["hyprland/workspaces"],
+  "hyprland/workspaces": {
+    "format": "{id}",
+    "on-click": "activate",
+    "all-outputs": true,
+    "persistent-workspaces": {
+      "*": 5
     }
   }
+}
 ]
