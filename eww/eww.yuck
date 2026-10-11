@@ -22,9 +22,16 @@
 (deflisten workspaces :initial "[]"
   "~/.config/eww/scripts/workspaces.sh")
 
+(deflisten activews :initial "1"
+  "~/.config/eww/scripts/activews.sh")
+
 (deflisten media
   :initial '{"status":"Stopped","label":""}'
   "~/.config/eww/scripts/media.sh")
+
+(deflisten cava
+  :initial "▁▁▁▁▁▁▁▁▁▁▁▁▁▁"
+  "~/.config/eww/scripts/cava.sh")
 
 (deflisten notif
   :initial '{"count":0,"dnd":false}'
@@ -44,20 +51,16 @@
     (label :text text)))
 
 ;; ───────────────────────────── LEFT ─────────────────────────────
-;; media slides out of the same capsule, right after the RAM reading
+;; cava-style visualizer, sits right after the RAM reading
+;; click = play/pause, right-click = next track, hover = track name
 (defwidget media-player []
-  (revealer :transition "slideright"
-            :duration "350ms"
-            :reveal {media.status != "Stopped"}
-    (box :class "media" :space-evenly false :spacing 10
-      (eventbox :cursor "pointer" :onclick "playerctl previous"
-        (label :class "icon btn" :text ""))
-      (eventbox :cursor "pointer" :onclick "playerctl play-pause"
-        (label :class "icon btn play"
-               :text {media.status == "Playing" ? "" : ""}))
-      (eventbox :cursor "pointer" :onclick "playerctl next"
-        (label :class "icon btn" :text ""))
-      (label :class "track" :limit-width 28 :text {media.label}))))
+  (eventbox :cursor "pointer"
+            :onclick "playerctl play-pause"
+            :onrightclick "playerctl next"
+            :tooltip {media.label}
+    (box :class "media" :space-evenly false
+      (label :class "cava ${media.status == 'Playing' ? '' : 'idle'}"
+             :text cava))))
 
 (defwidget stats []
   (island :class "stats" :spacing 0
@@ -71,14 +74,19 @@
     (stats)))
 
 ;; ──────────────────────────── CENTER ────────────────────────────
+;; the pill lives in the bottom layer and slides (margin-left transition),
+;; the numbers sit on top of it. 5 workspaces, 34px per slot.
 (defwidget ws-bar []
   (island :class "workspaces"
-    (box :class "ws-list" :space-evenly false :spacing 4
-      (for ws in workspaces
-        (eventbox :cursor "pointer"
-                  :onclick "hyprctl dispatch workspace ${ws.id}"
-          (box :class "ws ${ws.active ? 'active' : (ws.occupied ? 'occupied' : '')}"
-            (label :text "${ws.id}")))))))
+    (overlay
+      (box :class "ws-track" :halign "start" :valign "center"
+        (box :class "ws-pill at-${activews}" :halign "start" :valign "center"))
+      (box :class "ws-list" :space-evenly false :spacing 4 :halign "start"
+        (for ws in workspaces
+          (eventbox :cursor "pointer"
+                    :onclick "hyprctl dispatch workspace ${ws.id}"
+            (box :class "ws ${ws.active ? 'active' : (ws.occupied ? 'occupied' : '')}"
+              (label :text "${ws.id}"))))))))
 
 (defwidget center []
   (box :class "side center" :halign "center"

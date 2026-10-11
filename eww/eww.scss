@@ -63,23 +63,31 @@ tooltip {
 .media .play { color: $ice; font-size: 16px; }
 .media .track { color: $fg; }
 
-// workspaces
+// workspaces: fixed 30px slots, one pill that slides between them
 .workspaces { padding: 0 8px; }
+.ws-track { min-width: 166px; min-height: 26px; }
 .ws {
-  min-width: 26px;
+  min-width: 30px;
   min-height: 26px;
   border-radius: 13px;
   color: $dim;
-  transition: all 220ms ease;
+  transition: color 250ms ease;
 }
-.ws:hover { color: $fg; background-color: rgba(255,255,255,0.08); }
+.ws:hover { color: $fg; }
 .ws.occupied { color: $fg; }
-.ws.active {
-  min-width: 46px;
-  color: #ffffff;
-  background-color: rgba(18, 24, 32, 0.38);
+.ws.active { color: #ffffff; }
+
+.ws-pill {
+  min-width: 30px;
+  min-height: 26px;
+  border-radius: 13px;
+  background-color: rgba(156, 195, 227, 0.26);
   box-shadow: 0 0 14px rgba(156, 195, 227, 0.40),
               inset 0 0 0 1px rgba(156, 195, 227, 0.65);
+  transition: margin-left 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@for $i from 1 through 5 {
+  .ws-pill.at-#{$i} { margin-left: ($i - 1) * 34px; }
 }
 
 // bell
@@ -181,3 +189,12 @@ calendar:indeterminate { color: $dim; }
   box-shadow: 0 0 22px rgba(232, 104, 63, 0.30);
 }
 .pbtn.danger:hover .picon { color: $ember; }
+
+// cava visualizer
+.cava {
+  color: $ice;
+  font-size: 15px;
+  letter-spacing: 1px;
+  transition: color 300ms ease;
+}
+.cava.idle { color: $dim; }
