@@ -1,16 +1,21 @@
+;; ════════════════════════════════════════════════════════════════
+;;  glass bar for Hyprland  ·  eww
+;;  icons are Nerd Font glyphs (already rendered into this file)
+;; ════════════════════════════════════════════════════════════════
+
 ;; ───────────────────────────── DATA ─────────────────────────────
 (defpoll time :interval "1s"  "date +%H:%M:%S")
 (defpoll date :interval "30s" "date '+%a, %d %b'")
 
-(defpoll wifi :interval "4s"
+(defpoll wifi :interval "2s"
   :initial '{"on":false,"ssid":"","signal":0}'
   "~/.config/eww/scripts/wifi.sh")
 
-(defpoll bt :interval "4s"
+(defpoll bt :interval "2s"
   :initial '{"on":false,"device":""}'
   "~/.config/eww/scripts/bluetooth.sh")
 
-(defpoll battery :interval "10s"
+(defpoll battery :interval "5s"
   :initial '{"pct":100,"charging":false,"present":false}'
   "~/.config/eww/scripts/battery.sh")
 
@@ -39,16 +44,12 @@
     (label :text text)))
 
 ;; ───────────────────────────── LEFT ─────────────────────────────
-(defwidget stats []
-  (island :class "stats"
-    (stat :class "cpu" :icon "" :text "${round(EWW_CPU.avg, 0)}%")
-    (stat :class "ram" :icon "" :text "${round(EWW_RAM.used_mem_perc, 0)}%")))
-
+;; media slides out of the same capsule, right after the RAM reading
 (defwidget media-player []
   (revealer :transition "slideright"
             :duration "350ms"
             :reveal {media.status != "Stopped"}
-    (island :class "media" :spacing 10
+    (box :class "media" :space-evenly false :spacing 10
       (eventbox :cursor "pointer" :onclick "playerctl previous"
         (label :class "icon btn" :text ""))
       (eventbox :cursor "pointer" :onclick "playerctl play-pause"
@@ -56,21 +57,28 @@
                :text {media.status == "Playing" ? "" : ""}))
       (eventbox :cursor "pointer" :onclick "playerctl next"
         (label :class "icon btn" :text ""))
-      (label :class "track" :limit-width 34 :text {media.label}))))
+      (label :class "track" :limit-width 28 :text {media.label}))))
+
+(defwidget stats []
+  (island :class "stats" :spacing 0
+    (box :space-evenly false :spacing 14
+      (stat :class "cpu" :icon "" :text "${round(EWW_CPU.avg, 0)}%")
+      (stat :class "ram" :icon "" :text "${round(EWW_RAM.used_mem_perc, 0)}%"))
+    (media-player)))
 
 (defwidget left []
-  (box :class "side left" :halign "start" :space-evenly false :spacing 8
-    (stats)
-    (media-player)))
+  (box :class "side left" :halign "start" :space-evenly false
+    (stats)))
 
 ;; ──────────────────────────── CENTER ────────────────────────────
 (defwidget ws-bar []
-  (island :class "workspaces" :spacing 4
-    (for ws in workspaces
-      (eventbox :cursor "pointer"
-                :onclick "hyprctl dispatch workspace ${ws.id}"
-        (box :class "ws ${ws.active ? 'active' : (ws.occupied ? 'occupied' : '')}"
-          (label :text "${ws.id}"))))))
+  (island :class "workspaces"
+    (box :class "ws-list" :space-evenly false :spacing 4
+      (for ws in workspaces
+        (eventbox :cursor "pointer"
+                  :onclick "hyprctl dispatch workspace ${ws.id}"
+          (box :class "ws ${ws.active ? 'active' : (ws.occupied ? 'occupied' : '')}"
+            (label :text "${ws.id}")))))))
 
 (defwidget center []
   (box :class "side center" :halign "center"

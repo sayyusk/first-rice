@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # usage: toggle.sh wifi|bt|dnd
+export LC_ALL=C
 case "$1" in
   wifi)
     if [ "$(nmcli radio wifi)" = "enabled" ]; then nmcli radio wifi off; else nmcli radio wifi on; fi ;;

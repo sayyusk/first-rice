@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+export LC_ALL=C
 on=false; device=""
 if bluetoothctl show 2>/dev/null | grep -q 'Powered: yes'; then
   on=true
