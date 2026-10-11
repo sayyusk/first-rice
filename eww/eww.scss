@@ -1,0 +1,178 @@
+// ════════════════════════════════════════════════════════════════
+//  glass / cold-steel palette (pulled from the wallpaper)
+// ════════════════════════════════════════════════════════════════
+$glass:        rgba(18, 24, 32, 0.42);
+$glass-strong: rgba(18, 24, 32, 0.58);
+$edge:         rgba(255, 255, 255, 0.14);
+$shine:        rgba(255, 255, 255, 0.18);
+$fg:           #e4edf5;
+$dim:          rgba(228, 237, 245, 0.62);
+$ice:          #9cc3e3;
+$ember:        #e8683f;
+
+* {
+  all: unset;
+  font-family: "JetBrainsMono Nerd Font", "Symbols Nerd Font", monospace;
+  font-size: 13px;
+  color: $fg;
+}
+
+window { background: transparent; }
+
+tooltip {
+  background-color: $glass-strong;
+  border: 1px solid $edge;
+  border-radius: 10px;
+  padding: 4px 8px;
+}
+
+// ───────────────────────────── bar ─────────────────────────────
+// small floating capsules behind each icon group (no full-width bar)
+.island {
+  background-color: rgba(18, 24, 32, 0.30);
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 16px;
+  padding: 0 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+// light shadow so text stays readable over bright wallpaper areas
+.bar label {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.icon { color: $ice; font-size: 15px; }
+.icon.off,
+.icon.idle { color: $dim; }
+.bt.connected { color: #cfe4f5; }
+
+.stat .icon { margin-right: 1px; }
+.cpu .icon  { color: $ice; }
+.ram .icon  { color: #b7cfe3; }
+
+// media
+.media { padding: 0 14px; }
+.media .btn { color: $dim; transition: all 150ms; }
+.media .btn:hover { color: $fg; }
+.media .play { color: $ice; font-size: 16px; }
+.media .track { color: $fg; }
+
+// workspaces
+.workspaces { padding: 0 8px; }
+.ws {
+  min-width: 26px;
+  min-height: 26px;
+  border-radius: 13px;
+  color: $dim;
+  transition: all 220ms ease;
+}
+.ws:hover { color: $fg; background-color: rgba(255,255,255,0.08); }
+.ws.occupied { color: $fg; }
+.ws.active {
+  min-width: 46px;
+  color: #ffffff;
+  background-color: rgba(18, 24, 32, 0.38);
+  box-shadow: 0 0 14px rgba(156, 195, 227, 0.40),
+              inset 0 0 0 1px rgba(156, 195, 227, 0.65);
+}
+
+// bell
+.bell .icon { color: $fg; }
+.bell.unread .icon { color: $ice; }
+.bell.dnd .icon { color: $dim; }
+.badge {
+  color: #fff;
+  background-color: $ember;
+  border-radius: 9px;
+  padding: 0 6px;
+  font-size: 11px;
+}
+
+.battery.critical label { color: $ember; }
+.clock .time { font-weight: bold; }
+.clock .date { color: $dim; }
+.power { color: $fg; transition: all 150ms; }
+.power:hover { color: $ember; }
+
+// ───────────────────────── popups ──────────────────────────────
+.popup {
+  background-color: $glass-strong;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+  border: 1px solid $edge;
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: inset 0 1px 0 $shine;
+}
+
+.tile {
+  background-color: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 12px 8px;
+  min-width: 90px;
+  transition: all 180ms;
+}
+.tile:hover { background-color: rgba(255,255,255,0.11); }
+.tile.on {
+  background-color: rgba(156, 195, 227, 0.22);
+  border: 1px solid rgba(156, 195, 227, 0.55);
+  box-shadow: 0 0 14px rgba(156, 195, 227, 0.22);
+}
+.ticon  { font-size: 20px; color: $dim; }
+.tile.on .ticon { color: $ice; }
+.ttitle { font-weight: bold; }
+.tsub   { color: $dim; font-size: 11px; }
+
+.mlabel { color: $fg; }
+.mval   { color: $dim; }
+progressbar trough {
+  min-height: 8px;
+  border-radius: 4px;
+  background-color: rgba(255,255,255,0.10);
+}
+progressbar progress {
+  min-height: 8px;
+  border-radius: 4px;
+  background-image: linear-gradient(90deg, $ice, #d6e8f6);
+}
+.critical progressbar progress { background-image: linear-gradient(90deg, $ember, #f4a584); }
+.critical .icon { color: $ember; }
+
+// calendar
+calendar { padding: 4px; }
+calendar.header { color: $ice; font-weight: bold; }
+calendar.button { color: $dim; padding: 0 6px; }
+calendar.button:hover { color: $fg; }
+calendar:selected {
+  background-color: rgba(156, 195, 227, 0.30);
+  border-radius: 8px;
+  color: #fff;
+}
+calendar:indeterminate { color: $dim; }
+
+// ───────────────────────── power menu ──────────────────────────
+.backdrop { background-color: rgba(8, 12, 18, 0.45); }
+.pbtn {
+  background-color: $glass-strong;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02));
+  border: 1px solid $edge;
+  border-radius: 24px;
+  min-width: 110px;
+  padding: 26px 0 20px 0;
+  box-shadow: inset 0 1px 0 $shine;
+  transition: all 180ms;
+}
+.pbtn:hover {
+  background-color: rgba(156, 195, 227, 0.22);
+  border: 1px solid rgba(156, 195, 227, 0.6);
+  box-shadow: 0 0 22px rgba(156, 195, 227, 0.30);
+}
+.picon  { font-size: 30px; color: $ice; }
+.plabel { color: $fg; }
+.pbtn.danger:hover {
+  background-color: rgba(232, 104, 63, 0.22);
+  border: 1px solid rgba(232, 104, 63, 0.65);
+  box-shadow: 0 0 22px rgba(232, 104, 63, 0.30);
+}
+.pbtn.danger:hover .picon { color: $ember; }

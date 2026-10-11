@@ -1,0 +1,220 @@
+;; ───────────────────────────── DATA ─────────────────────────────
+(defpoll time :interval "1s"  "date +%H:%M:%S")
+(defpoll date :interval "30s" "date '+%a, %d %b'")
+
+(defpoll wifi :interval "4s"
+  :initial '{"on":false,"ssid":"","signal":0}'
+  "~/.config/eww/scripts/wifi.sh")
+
+(defpoll bt :interval "4s"
+  :initial '{"on":false,"device":""}'
+  "~/.config/eww/scripts/bluetooth.sh")
+
+(defpoll battery :interval "10s"
+  :initial '{"pct":100,"charging":false,"present":false}'
+  "~/.config/eww/scripts/battery.sh")
+
+(deflisten workspaces :initial "[]"
+  "~/.config/eww/scripts/workspaces.sh")
+
+(deflisten media
+  :initial '{"status":"Stopped","label":""}'
+  "~/.config/eww/scripts/media.sh")
+
+(deflisten notif
+  :initial '{"count":0,"dnd":false}'
+  "~/.config/eww/scripts/notifications.sh")
+
+;; ──────────────────────────── HELPERS ───────────────────────────
+(defwidget island [?class]
+  (box :class "island ${class}"
+       :orientation "h"
+       :space-evenly false
+       :spacing 14
+    (children)))
+
+(defwidget stat [icon text ?class]
+  (box :class "stat ${class}" :space-evenly false :spacing 7
+    (label :class "icon" :text icon)
+    (label :text text)))
+
+;; ───────────────────────────── LEFT ─────────────────────────────
+(defwidget stats []
+  (island :class "stats"
+    (stat :class "cpu" :icon "" :text "${round(EWW_CPU.avg, 0)}%")
+    (stat :class "ram" :icon "" :text "${round(EWW_RAM.used_mem_perc, 0)}%")))
+
+(defwidget media-player []
+  (revealer :transition "slideright"
+            :duration "350ms"
+            :reveal {media.status != "Stopped"}
+    (island :class "media" :spacing 10
+      (eventbox :cursor "pointer" :onclick "playerctl previous"
+        (label :class "icon btn" :text ""))
+      (eventbox :cursor "pointer" :onclick "playerctl play-pause"
+        (label :class "icon btn play"
+               :text {media.status == "Playing" ? "" : ""}))
+      (eventbox :cursor "pointer" :onclick "playerctl next"
+        (label :class "icon btn" :text ""))
+      (label :class "track" :limit-width 34 :text {media.label}))))
+
+(defwidget left []
+  (box :class "side left" :halign "start" :space-evenly false :spacing 8
+    (stats)
+    (media-player)))
+
+;; ──────────────────────────── CENTER ────────────────────────────
+(defwidget ws-bar []
+  (island :class "workspaces" :spacing 4
+    (for ws in workspaces
+      (eventbox :cursor "pointer"
+                :onclick "hyprctl dispatch workspace ${ws.id}"
+        (box :class "ws ${ws.active ? 'active' : (ws.occupied ? 'occupied' : '')}"
+          (label :text "${ws.id}"))))))
+
+(defwidget center []
+  (box :class "side center" :halign "center"
+    (ws-bar)))
+
+;; ───────────────────────────── RIGHT ────────────────────────────
+(defwidget bell []
+  (eventbox :cursor "pointer"
+            :onclick "swaync-client -t -sw"
+            :onrightclick "swaync-client -d -sw"
+    (box :class "bell ${notif.dnd ? 'dnd' : (notif.count > 0 ? 'unread' : '')}"
+         :space-evenly false :spacing 5
+      (label :class "icon" :text {notif.dnd ? "" : ""})
+      (revealer :transition "slideleft" :duration "200ms"
+                :reveal {notif.count > 0 && !notif.dnd}
+        (label :class "badge" :text "${notif.count}")))))
+
+(defwidget tray []
+  (eventbox :cursor "pointer"
+            :onclick "~/.config/eww/scripts/popup.sh quick"
+    (box :class "tray" :space-evenly false :spacing 14
+      (label :class "icon wifi ${wifi.on ? (wifi.ssid != '' ? '' : 'idle') : 'off'}"
+             :text ""
+             :tooltip {wifi.on ? (wifi.ssid != "" ? wifi.ssid : "Not connected") : "Wi-Fi off"})
+      (label :class "icon bt ${bt.on ? (bt.device != '' ? 'connected' : '') : 'off'}"
+             :text ""
+             :tooltip {bt.on ? (bt.device != "" ? bt.device : "No device") : "Bluetooth off"})
+      (box :class "battery ${battery.pct <= 20 && !battery.charging ? 'critical' : ''}"
+           :visible {battery.present}
+           :space-evenly false :spacing 6
+        (label :class "icon"
+               :text {battery.charging ? "" :
+                      battery.pct > 85 ? "" :
+                      battery.pct > 60 ? "" :
+                      battery.pct > 35 ? "" :
+                      battery.pct > 15 ? "" : ""})
+        (label :text "${battery.pct}%")))))
+
+(defwidget clock []
+  (eventbox :cursor "pointer"
+            :onclick "~/.config/eww/scripts/popup.sh calendar"
+    (box :class "clock" :space-evenly false :spacing 10
+      (label :class "time" :text time)
+      (label :class "date" :text date))))
+
+(defwidget power-btn []
+  (eventbox :cursor "pointer"
+            :onclick "~/.config/eww/scripts/popup.sh powermenu"
+    (label :class "icon power" :text "")))
+
+(defwidget right []
+  (box :class "side right" :halign "end" :space-evenly false :spacing 8
+    (island :class "status"
+      (bell)
+      (tray))
+    (island :class "clock-island"
+      (clock))
+    (island :class "power-island"
+      (power-btn))))
+
+;; ───────────────────────────── BAR ──────────────────────────────
+(defwindow bar
+  :monitor 0                       ; or "eDP-1"
+  :namespace "eww-bar"
+  :stacking "fg"
+  :exclusive true
+  :geometry (geometry :x "0%" :y "6px" :width "98%" :height "40px" :anchor "top center")
+  (centerbox :class "bar" :orientation "h"
+    (left)
+    (center)
+    (right)))
+
+;; ─────────────────────── QUICK SETTINGS POPUP ───────────────────
+(defwidget tile [icon title sub active cmd]
+  (eventbox :cursor "pointer" :onclick cmd
+    (box :class "tile ${active ? 'on' : ''}"
+         :orientation "v" :space-evenly false :spacing 4
+      (label :class "ticon" :text icon)
+      (label :class "ttitle" :text title)
+      (label :class "tsub" :limit-width 11 :text sub))))
+
+(defwidget meter [icon label pct ?class]
+  (box :class "meter ${class}" :orientation "v" :space-evenly false :spacing 6
+    (box :space-evenly false :spacing 8
+      (label :class "icon" :text icon)
+      (label :class "mlabel" :halign "start" :hexpand true :text label)
+      (label :class "mval" :halign "end" :text "${round(pct, 0)}%"))
+    (progress :class "bar" :orientation "h" :value pct)))
+
+(defwindow quick
+  :monitor 0
+  :namespace "eww-quick"
+  :stacking "overlay"
+  :exclusive false
+  :geometry (geometry :x "1%" :y "54px" :width "340px" :anchor "top right")
+  (box :class "popup" :orientation "v" :space-evenly false :spacing 16
+    (box :class "tiles" :spacing 10
+      (tile :icon "" :title "Wi-Fi"
+            :sub {wifi.on ? (wifi.ssid != "" ? wifi.ssid : "On") : "Off"}
+            :active {wifi.on}
+            :cmd "~/.config/eww/scripts/toggle.sh wifi")
+      (tile :icon "" :title "Bluetooth"
+            :sub {bt.on ? (bt.device != "" ? bt.device : "On") : "Off"}
+            :active {bt.on}
+            :cmd "~/.config/eww/scripts/toggle.sh bt")
+      (tile :icon "" :title "Silent"
+            :sub {notif.dnd ? "On" : "Off"}
+            :active {notif.dnd}
+            :cmd "~/.config/eww/scripts/toggle.sh dnd"))
+    (meter :icon "" :label "CPU" :pct {EWW_CPU.avg})
+    (meter :icon "" :label "Memory" :pct {EWW_RAM.used_mem_perc})
+    (box :visible {battery.present}
+      (meter :icon {battery.charging ? "" : ""}
+             :label {battery.charging ? "Battery · charging" : "Battery"}
+             :pct {battery.pct}
+             :class {battery.pct <= 20 && !battery.charging ? "critical" : ""}))))
+
+;; ─────────────────────────── CALENDAR ───────────────────────────
+(defwindow calendar
+  :monitor 0
+  :namespace "eww-calendar"
+  :stacking "overlay"
+  :exclusive false
+  :geometry (geometry :x "1%" :y "54px" :width "300px" :anchor "top right")
+  (box :class "popup"
+    (calendar :class "cal")))
+
+;; ─────────────────────────── POWER MENU ─────────────────────────
+(defwidget pbtn [icon label cmd ?class]
+  (eventbox :cursor "pointer" :onclick "eww close powermenu; ${cmd}"
+    (box :class "pbtn ${class}" :orientation "v" :space-evenly false :spacing 10
+      (label :class "picon" :text icon)
+      (label :class "plabel" :text label))))
+
+(defwindow powermenu
+  :monitor 0
+  :namespace "eww-powermenu"
+  :stacking "overlay"
+  :exclusive false
+  :geometry (geometry :x "0" :y "0" :width "100%" :height "100%")
+  (eventbox :class "backdrop" :onclick "eww close powermenu"
+    (box :halign "center" :valign "center" :class "pgrid" :spacing 16
+      (pbtn :icon ""    :label "Lock"      :cmd "hyprlock")
+      (pbtn :icon ""   :label "Sleep"     :cmd "systemctl suspend")
+      (pbtn :icon ""  :label "Log out"   :cmd "hyprctl dispatch exit")
+      (pbtn :icon ""  :label "Restart"   :cmd "systemctl reboot")
+      (pbtn :icon ""   :label "Shut down" :cmd "systemctl poweroff" :class "danger"))))
