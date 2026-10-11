@@ -2,7 +2,7 @@
 ## I used:
 <ul>
   <li>Hyprland</li>
-  <li>Waybar</li>
+  <li>Eww</li>
   <li>Rofi</li>
   <li>Awww</li>
   <li>Kitty</li>
