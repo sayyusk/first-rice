@@ -1,0 +1,25 @@
+window#waybar {
+    background: #313244;
+    color: #cdd6f4;
+}
+
+#workspaces {
+    background: #45475a;
+    border-radius: 10px;
+    padding: 0 8px;
+    margin: 6px 8px 0 8px;
+}
+
+#workspaces button {
+    padding: 0 6px;
+    color: #cdd6f4;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#workspaces button.active {
+    background: #89b4fa;
+    color: #181825;
+    border-radius: 7px;
+}
